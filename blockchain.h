@@ -10,24 +10,56 @@ class User {
         string name;
         string public_key;
         double balance;
+        string getPublicKey(){
+            return public_key;
+        }
 };
 class Transactions{
-    public:
+    private:
         string _sender;
         string _receiver;
         double _value;
+
+    public:
         std::time_t _date;
 
-        Transactions();
-        Transactions(string sender, string receiver, double value){
+           Transactions() {
+               _sender = "";
+               _receiver ="";
+               _value = 0;
+               _date = std::time(0);
+
+           }
+
+           ~Transactions(){}
+        Transactions(string sender, string receiver, double value) {
             _sender = sender;
-            _receiver= receiver;
+            _receiver = receiver;
             _value = value;
             _date = std::time(nullptr);
 
         }
-
-
+        void setSender(string a){
+            _sender = a;
+        }
+        void setReceiver(string b){
+            _receiver = b;
+        }
+        void setValue(double c){
+            _value = c;
+        }
+        void setDate(std::time_t date){
+            _date = date;
+        }
+        string getSender(){
+            return _sender;
+        }
+        string getReceiver(){
+            return _receiver;
+        }
+        double getValue(){
+            return _value;
+        }
 };
 class Block{
     string _previousBlock;
@@ -43,6 +75,7 @@ class Block{
 
 string Hashish(string &);
 User GenerateUser(int i);
+Transactions GenerateTransactions(std::vector<User> , int);
 void MainFunction();
 string ToHex(const string &, bool);
 string valueCheck(int &, string &, string , int);

@@ -25,15 +25,33 @@ User GenerateUser(int i){
     }
     string HashedKey;
     HashedKey = oss.str();
-    std::cout << HashedKey << " ";
+    //std::cout << HashedKey << " ";
     oss.clear();
     oss.str("");
     string final;
     final =Hashish(HashedKey);
-    std::cout << final << std::endl;
+   // std::cout << final << std::endl;
 
     myUser.public_key = HashedKey;
     return myUser;
+}
+Transactions GenerateTransactions(std::vector<User> userVector, int i){
+    std::uniform_int_distribution<std::mt19937::result_type> distribution(0,999);
+    std::uniform_int_distribution<std::mt19937::result_type> dist(1,100000);
+    Transactions myTransaction;
+    double coin = 0;
+        coin = dist(gen);
+        string person;
+                while(coin > userVector[i].balance) coin = dist(gen);
+                person = userVector[0].public_key;
+
+
+                myTransaction.setSender(userVector[distribution(gen)].public_key);
+                myTransaction.setReceiver(userVector[distribution(gen)].public_key);
+                myTransaction.setValue(coin);
+                myTransaction.setDate(std::time(nullptr));
+        //std::cout << myTransaction.getSender() << " " << myTransaction.getReceiver() << " " << myTransaction.getValue() << std::endl;
+    return myTransaction;
 }
 void MainFunction(){
     std::vector<User> userVector;
@@ -43,9 +61,16 @@ void MainFunction(){
         Person = GenerateUser(i);
         userVector.push_back(Person);
     }
+    Transactions myTransaction;
+    for(int j = 0; j< 10000; j++){
+
+        myTransaction = GenerateTransactions(userVector, j);
+
+    }
  /*   for(int j = 0; j < 1000; j++){
         for(int j1 =0;j1<1000;j1++){
           if(userVector[j].public_key == userVector[j1].public_key && j != j1)  std::cout << "sutampa " << j << " " << j1 << std::endl;
         }
     }*/
+
 }
