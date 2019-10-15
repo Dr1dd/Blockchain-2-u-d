@@ -63,8 +63,8 @@ string Hashish(string &a){
             b= Compress(b, a, hashSize);
             for(std::string::size_type i = 0; i < hashSize; i++){
                 if(i != 0) {
-                    b[i] = (sz*b[i-1]*i) %127;
-                    if(b[i] == 0) b[i] = (sz*b[i-1]*i) %113;
+                    b[i] = (sz*b[i-1]*i *a[i]) %127;
+                    if(b[i] == 0) b[i] = (sz*b[i-1]*i*a[i]) %113;
                     val = int(b[i]);
                     valueCheck(val, b, a, i);
                 }
@@ -119,7 +119,11 @@ string Compress(string &b, string a, int hashSize){
     for(std::string::size_type i = 0; i < a.size(); i++){
         sum = sum + a[i];
         if(skaicius == daliklis){
-            b[j] = sum / daliklis*gSum %127;
+            if(j !=0){
+                b[j] = (sum / daliklis*gSum *a[i] *a[i-1]*a[a.size()-1]*b[j-1]) %127;
+                if(b[j] == 0) b[j] = (sum / daliklis*gSum *a[i] *a[i-1] *a[a.size()-1]*b[j-1]) %113;
+            }
+            else b[j] = (sum / daliklis*gSum *a[i] *a[i-1]*a[a.size()-1]) %127;
             skaicius = 0;
             sum = 0;
             j++;

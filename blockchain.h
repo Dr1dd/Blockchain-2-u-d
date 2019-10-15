@@ -10,8 +10,12 @@ class User {
         string public_key;
         int balance;
 };
+class Transactions{
+    public:
 
-string Hashish(string &, double &);
+
+};
+string Hashish(string &);
 User GenerateUser(int i);
 void MainFunction();
 string ToHex(const string &, bool);
