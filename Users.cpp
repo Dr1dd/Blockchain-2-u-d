@@ -42,15 +42,15 @@ Transactions GenerateTransactions(std::vector<User> userVector, int i){
     double coin = 0;
         coin = dist(gen);
         string person;
-                while(coin > userVector[i].balance) coin = dist(gen);
-                person = userVector[0].public_key;
+         double randomsk =distribution(gen);
+        while(coin > userVector[randomsk].balance) coin = dist(gen);
 
 
-                myTransaction.setSender(userVector[distribution(gen)].public_key);
+                myTransaction.setSender(userVector[randomsk].public_key);
                 myTransaction.setReceiver(userVector[distribution(gen)].public_key);
                 myTransaction.setValue(coin);
                 myTransaction.setDate(std::time(nullptr));
-        //std::cout << myTransaction.getSender() << " " << myTransaction.getReceiver() << " " << myTransaction.getValue() << std::endl;
+       // std::cout << myTransaction.getSender() << " " << myTransaction.getReceiver() << " " << myTransaction.getValue() << std::endl;
     return myTransaction;
 }
 void MainFunction(){
