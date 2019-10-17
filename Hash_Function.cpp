@@ -15,7 +15,7 @@ string Hashish(string &a){
     int sz=0;
     string b;
     string first;
-    int hashSize = 16;
+    int hashSize = 32;
     int sk2 = 0;
     int val;
     sz = a.size();
@@ -78,6 +78,10 @@ string Hashish(string &a){
             b = ToHex(b, false);
         }
         a = b;
+    }
+    int n = a.length();
+    for(int m = 0; m < n/2; m++){
+        std::swap(a[m], a[m+1]);
     }
     return a;
 }

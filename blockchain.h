@@ -16,12 +16,13 @@ class User {
 };
 class Transactions{
     private:
+        string _hash;
         string _sender;
         string _receiver;
         double _value;
+        std::time_t _date;
 
     public:
-        std::time_t _date;
 
            Transactions() {
                _sender = "";
@@ -38,6 +39,9 @@ class Transactions{
             _value = value;
             _date = std::time(nullptr);
 
+        }
+        void setHash(string hash){
+            _hash = hash;
         }
         void setSender(string a){
             _sender = a;
@@ -60,9 +64,16 @@ class Transactions{
         double getValue(){
             return _value;
         }
+        const string &getHash() const {
+            return _hash;
+        }
+    const time_t &getDate() const {
+        return _date;
+    }
 };
 class Block{
     string _previousBlock;
+    string _currentBlock;
     std::time_t Timestamp;
     string version = "0.1";
     string merkelHash;
@@ -76,6 +87,7 @@ class Block{
 string Hashish(string &);
 User GenerateUser(int i);
 Transactions GenerateTransactions(std::vector<User> , int);
+std::vector<string> MerkleTree(std::vector<string>);
 void MainFunction();
 string ToHex(const string &, bool);
 string valueCheck(int &, string &, string , int);
