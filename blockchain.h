@@ -72,22 +72,61 @@ class Transactions{
     }
 };
 class Block{
-    string _previousBlock;
-    string _currentBlock;
+private:
+    string previousBlock;
+    string currentBlock;
     std::time_t Timestamp;
     string version = "0.1";
-    string merkelHash;
+    string merkleHash;
     unsigned int Nonce;
     double difficultyTarget;
 
     std::vector<Transactions> TransactionBlock;
+public:
+    const string &getPreviousBlock() const;
+
+    void setPreviousBlock(const string &previousBlock);
+
+    const string &getCurrentBlock() const;
+
+    void setCurrentBlock(const string &currentBlock);
+
+    time_t getTimestamp() const;
+
+    void setTimestamp(time_t Timestamp);
+
+    const string &getVersion() const;
+
+    void setVersion(const string &version);
+
+    const string &getMerkleHash() const;
+
+    void setMerkleHash(const string &merkelHash);
+
+    unsigned int getNonce() const;
+
+    void setNonce(unsigned int Nonce);
+
+    double getDifficultyTarget() const;
+
+    void setDifficultyTarget(double difficultyTarget);
+
+    const std::vector<Transactions> &getTransactionBlock() const;
+
+    void setTransactionBlock(const std::vector<Transactions> &TransactionBlock);
+
+
+};
+class Blockchain{
+
 
 };
 
 string Hashish(string &);
 User GenerateUser(int i);
-Transactions GenerateTransactions(std::vector<User> , int);
+Transactions GenerateTransactions(std::vector<User>);
 std::vector<string> MerkleTree(std::vector<string>);
+Block newBlock(Block , std::vector<Block> , std::vector<Transactions> );
 void MainFunction();
 string ToHex(const string &, bool);
 string valueCheck(int &, string &, string , int);

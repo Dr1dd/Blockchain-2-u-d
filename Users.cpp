@@ -35,7 +35,7 @@ User GenerateUser(int i){
     myUser.public_key = HashedKey;
     return myUser;
 }
-Transactions GenerateTransactions(std::vector<User> userVector, int i){
+Transactions GenerateTransactions(std::vector<User> userVector){
     std::uniform_int_distribution<std::mt19937::result_type> distribution(0,999);
     std::uniform_int_distribution<std::mt19937::result_type> dist(1,100000);
     Transactions myTransaction;
@@ -70,23 +70,15 @@ void MainFunction(){
     std::vector<Transactions> myTransactionsVector;
     for(int j = 0; j< 10000; j++){
 
-        myTransaction = GenerateTransactions(userVector, j);
+        myTransaction = GenerateTransactions(userVector);
         myTransactionsVector.push_back(myTransaction);
 
     }
-    std::vector<Transactions> myTransactionsVectorCopy(myTransactionsVector);
-    std::vector<string> myTransactionsHashes;
-    for(int k = 0; k < myTransactionsVectorCopy.size(); k++){
-        myTransactionsHashes.push_back(myTransactionsVectorCopy[k].getHash());
-    }
-    std::vector<string> MerkleHash;
-    MerkleHash = MerkleTree(myTransactionsHashes);
-    std::cout << MerkleHash[0] << std::endl;
- /*   for(int j = 0; j < 1000; j++){
-        for(int j1 =0;j1<1000;j1++){
-          if(userVector[j].public_key == userVector[j1].public_key && j != j1)  std::cout << "sutampa " << j << " " << j1 << std::endl;
-        }
-    }*/
+
+   // std::vector<string> MerkleHash;
+    //MerkleHash = MerkleTree(myTransactionsHashes);
+    //std::cout << MerkleHash[0] << std::endl;
+    std::vector<Block> myBlockchain;
 
 }
 std::vector<string> MerkleTree(std::vector<string> myTransaction){
@@ -109,5 +101,36 @@ std::vector<string> MerkleTree(std::vector<string> myTransaction){
     temp = myTransaction.size()/2;
     if(TransactionTemp.size() == 1) return TransactionTemp;
     MerkleTree(TransactionTemp);
+
+}
+Block newBlock(Block myBlock, std::vector<Block> myBlockchain, std::vector<Transactions> myTransactionsVector){
+    string previousBlock;
+    previousBlock.resize(64);
+
+   // if(myBlockchain.size() < 1) std::fill(previousBlock.begin(), previousBlock.end(), "0");
+  //  else{
+  //      previousBlock = myBlockchain[myBlockchain.size()-1].getCurrentBlock();
+   //     myBlock.setPreviousBlock(previousBlock);
+   // }
+    std::uniform_int_distribution<std::mt19937::result_type> distribution(0,999);
+    std::vector<Transactions> myTransactionsVectorCopy(myTransactionsVector);
+
+    int tempTxval;
+    std::vector<Transactions> tempTransactionBlock;
+    while(tempTransactionBlock.size() != 100){
+        tempTxval = distribution(gen);
+        tempTransactionBlock.push_back(myTransactionsVectorCopy[tempTxval]);
+        myTransactionsVectorCopy.erase(myTransactionsVectorCopy.begin() +tempTxval);
+    }
+    myBlock.setTransactionBlock(tempTransactionBlock);
+
+    std::vector<string> myTransactionsHashes;
+    for(int k = 0; k < myTransactionsVector.size(); k++){
+        myTransactionsHashes.push_back(tempTransactionBlock[k].getHash());
+    }
+    std::vector<string> MerkleHash;
+    MerkleHash = MerkleTree(myTransactionsHashes);
+    myBlock.setMerkleHash(MerkleHash[0]);
+    myBlock.setTimestamp(std::time(nullptr));
 
 }
