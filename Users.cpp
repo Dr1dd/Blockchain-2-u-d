@@ -79,6 +79,9 @@ void MainFunction(){
     //MerkleHash = MerkleTree(myTransactionsHashes);
     //std::cout << MerkleHash[0] << std::endl;
     std::vector<Block> myBlockchain;
+    while(myTransactionsVector.size()>0){
+        myBlockchain.push_back(newBlock(myBlockchain, myTransactionsVector));
+    }
 
 }
 std::vector<string> MerkleTree(std::vector<string> myTransaction){
@@ -103,34 +106,57 @@ std::vector<string> MerkleTree(std::vector<string> myTransaction){
     MerkleTree(TransactionTemp);
 
 }
-Block newBlock(Block myBlock, std::vector<Block> myBlockchain, std::vector<Transactions> myTransactionsVector){
+Block newBlock(std::vector<Block> myBlockchain, std::vector<Transactions> myTransactionsVector){
+    Block myBlock;
     string previousBlock;
     previousBlock.resize(64);
 
-   // if(myBlockchain.size() < 1) std::fill(previousBlock.begin(), previousBlock.end(), "0");
-  //  else{
-  //      previousBlock = myBlockchain[myBlockchain.size()-1].getCurrentBlock();
-   //     myBlock.setPreviousBlock(previousBlock);
-   // }
+    if(myBlockchain.size() < 1) std::fill(previousBlock.begin(), previousBlock.end(), '0');
+    else{
+        previousBlock = myBlockchain[myBlockchain.size()-1].getCurrentBlock();
+        myBlock.setPreviousBlock(previousBlock);
+    }
     std::uniform_int_distribution<std::mt19937::result_type> distribution(0,999);
-    std::vector<Transactions> myTransactionsVectorCopy(myTransactionsVector);
+    //std::vector<Transactions> myTransactionsVectorCopy(myTransactionsVector);
 
     int tempTxval;
     std::vector<Transactions> tempTransactionBlock;
-    while(tempTransactionBlock.size() != 100){
-        tempTxval = distribution(gen);
-        tempTransactionBlock.push_back(myTransactionsVectorCopy[tempTxval]);
-        myTransactionsVectorCopy.erase(myTransactionsVectorCopy.begin() +tempTxval);
+    if(myTransactionsVector.size()>100) {
+        while (tempTransactionBlock.size() != 100) {
+            tempTxval = distribution(gen);
+            tempTransactionBlock.push_back(myTransactionsVector[tempTxval]);
+            myTransactionsVector.erase(myTransactionsVector.begin() + tempTxval);
+        }
     }
-    myBlock.setTransactionBlock(tempTransactionBlock);
-
-    std::vector<string> myTransactionsHashes;
-    for(int k = 0; k < myTransactionsVector.size(); k++){
-        myTransactionsHashes.push_back(tempTransactionBlock[k].getHash());
+    else{
+        while (tempTransactionBlock.size() != myTransactionsVector.size()) {
+            tempTxval = distribution(gen);
+            tempTransactionBlock.push_back(myTransactionsVector[tempTxval]);
+            myTransactionsVector.erase(myTransactionsVector.begin() + tempTxval);
+        }
     }
-    std::vector<string> MerkleHash;
-    MerkleHash = MerkleTree(myTransactionsHashes);
-    myBlock.setMerkleHash(MerkleHash[0]);
-    myBlock.setTimestamp(std::time(nullptr));
+        myBlock.setTransactionBlock(tempTransactionBlock);
 
+        std::vector<string> myTransactionsHashes;
+        for(int k = 0; k < myTransactionsVector.size(); k++){
+            myTransactionsHashes.push_back(tempTransactionBlock[k].getHash());
+        }
+        std::vector<string> MerkleHash;
+        MerkleHash = MerkleTree(myTransactionsHashes);
+        myBlock.setMerkleHash(MerkleHash[0]);
+        myBlock.setTimestamp(std::time(nullptr));
+
+        string MainBlockHash;
+        uintmax_t Nonce =0;
+        MainBlockHash = myBlock.getPreviousBlock()+std::to_string(myBlock.getTimestamp())+myBlock.getDifficultyTarget()+myBlock.getMerkleHash()+ myBlock.getVersion();
+        string TempBlockHash;
+        do{
+            TempBlockHash = MainBlockHash +std::to_string(Nonce);
+            Hashish(TempBlockHash);
+            Nonce++;
+        }while(TempBlockHash>myBlock.getDifficultyTarget());
+        myBlock.setCurrentBlock(TempBlockHash);
+        myBlock.setNonce(Nonce);
+
+    return myBlock;
 }

@@ -126,7 +126,7 @@ string Hashish(string &);
 User GenerateUser(int i);
 Transactions GenerateTransactions(std::vector<User>);
 std::vector<string> MerkleTree(std::vector<string>);
-Block newBlock(Block , std::vector<Block> , std::vector<Transactions> );
+Block newBlock(std::vector<Block> , std::vector<Transactions> );
 void MainFunction();
 string ToHex(const string &, bool);
 string valueCheck(int &, string &, string , int);
