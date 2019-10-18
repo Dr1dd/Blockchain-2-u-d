@@ -155,7 +155,7 @@ Block newBlock(std::vector<Block> myBlockchain, std::vector<Transactions> myTran
 
     string MainBlockHash;
     uintmax_t Nonce =0;
-    string diffTarget = "00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
+    string diffTarget = "000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
     myBlock.setDifficultyTarget(diffTarget);
     MainBlockHash = myBlock.getPreviousBlock()+std::to_string(myBlock.getTimestamp())+myBlock.getDifficultyTarget()+myBlock.getMerkleHash()+ myBlock.getVersion();
     string TempBlockHash;
@@ -163,10 +163,11 @@ Block newBlock(std::vector<Block> myBlockchain, std::vector<Transactions> myTran
         TempBlockHash = MainBlockHash +std::to_string(Nonce);
         Hashish(TempBlockHash);
         Nonce++;
-        std::cout << TempBlockHash << " " << Nonce << std::endl;
+        //std::cout << TempBlockHash << " " << Nonce << std::endl;
     }while(TempBlockHash>myBlock.getDifficultyTarget());
 
     myBlock.setCurrentBlock(TempBlockHash);
     myBlock.setNonce(Nonce);
+    std::cout << TempBlockHash << " " << Nonce << std::endl;
     return myBlock;
 }

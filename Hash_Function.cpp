@@ -63,14 +63,14 @@ string Hashish(string &a){
             b= Compress(b, a, hashSize);
             for(std::string::size_type i = 0; i < hashSize; i++){
                 if(i != 0) {
-                    b[i] = (sz*b[i-1]*i *a[i]) %127;
-                    if(b[i] == 0) b[i] = (sz*b[i-1]*i*a[i]) %113;
+                    b[i] = (sz*b[i-1]*i *a[i] *a[a.size()-1]) %127;
+                    if(b[i] == 0) b[i] = (sz*b[i-1]*i*a[i]*a[a.size()-1]) %113;
                     val = int(b[i]);
                     valueCheck(val, b, a, i);
                 }
                 else{
-                    b[i] = (sz*b[0]*a[0]) %127;
-                    if(b[i] == 0) b[i] = (sz*b[0]*a[0]) %113;
+                    b[i] = (sz*b[0]*a[0]*a[a.size()-1]) %127;
+                    if(b[i] == 0) b[i] = (sz*b[0]*a[0]*a[a.size()-1]) %113;
                     val = int(b[i]);
                     valueCheck(val, b, a, i);
                 }
