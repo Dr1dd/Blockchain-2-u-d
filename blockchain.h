@@ -79,7 +79,7 @@ private:
     string version = "0.1";
     string merkleHash;
     unsigned int Nonce;
-    double difficultyTarget;
+    string difficultyTarget;
 
     std::vector<Transactions> TransactionBlock;
 public:
@@ -107,17 +107,13 @@ public:
 
     void setNonce(unsigned int Nonce);
 
-    double getDifficultyTarget() const;
+    string getDifficultyTarget() const;
 
-    void setDifficultyTarget(double difficultyTarget);
+    void setDifficultyTarget(string difficultyTarget);
 
     const std::vector<Transactions> &getTransactionBlock() const;
 
     void setTransactionBlock(const std::vector<Transactions> &TransactionBlock);
-
-
-};
-class Blockchain{
 
 
 };

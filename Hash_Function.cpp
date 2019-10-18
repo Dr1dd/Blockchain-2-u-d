@@ -80,8 +80,8 @@ string Hashish(string &a){
         a = b;
     }
     int n = a.length();
-    for(int m = 0; m < n/2; m++){
-        std::swap(a[m], a[m+1]);
+    for(int m = 0; m < n/2; m+=2){
+        std::swap(a[m], a[m+3]);
     }
     return a;
 }

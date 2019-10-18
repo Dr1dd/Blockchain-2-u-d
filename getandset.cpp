@@ -51,11 +51,11 @@ void Block::setNonce(unsigned int Nonce) {
     Block::Nonce = Nonce;
 }
 
-double Block::getDifficultyTarget() const {
+string Block::getDifficultyTarget() const {
     return difficultyTarget;
 }
 
-void Block::setDifficultyTarget(double difficultyTarget) {
+void Block::setDifficultyTarget(string difficultyTarget) {
     Block::difficultyTarget = difficultyTarget;
 }
 

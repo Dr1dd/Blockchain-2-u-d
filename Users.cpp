@@ -81,13 +81,14 @@ void MainFunction(){
     std::vector<Block> myBlockchain;
     while(myTransactionsVector.size()>0){
         myBlockchain.push_back(newBlock(myBlockchain, myTransactionsVector));
+        std::cout <<" help help help help" << std::endl;
     }
 
 }
 std::vector<string> MerkleTree(std::vector<string> myTransaction){
     string result;
     std::vector<string> TransactionTemp;
-    int temp;
+    //int temp;
     for(int i = 0; i < myTransaction.size()-1; i+=2){
         if(myTransaction.size()%2==0) {
             result = myTransaction[i] + myTransaction[i+1];
@@ -101,7 +102,7 @@ std::vector<string> MerkleTree(std::vector<string> myTransaction){
             TransactionTemp.push_back(result);
         }
     }
-    temp = myTransaction.size()/2;
+    //temp = myTransaction.size()/2;
     if(TransactionTemp.size() == 1) return TransactionTemp;
     MerkleTree(TransactionTemp);
 
@@ -115,17 +116,21 @@ Block newBlock(std::vector<Block> myBlockchain, std::vector<Transactions> myTran
     else{
         previousBlock = myBlockchain[myBlockchain.size()-1].getCurrentBlock();
         myBlock.setPreviousBlock(previousBlock);
+       // std::cout<< "pp2" << std::endl;
+
     }
     std::uniform_int_distribution<std::mt19937::result_type> distribution(0,999);
     //std::vector<Transactions> myTransactionsVectorCopy(myTransactionsVector);
 
     int tempTxval;
     std::vector<Transactions> tempTransactionBlock;
-    if(myTransactionsVector.size()>100) {
-        while (tempTransactionBlock.size() != 100) {
+    if(myTransactionsVector.size()>=100) {
+        while (tempTransactionBlock.size() < 100) {
             tempTxval = distribution(gen);
             tempTransactionBlock.push_back(myTransactionsVector[tempTxval]);
             myTransactionsVector.erase(myTransactionsVector.begin() + tempTxval);
+           // std::cout<< tempTransactionBlock.size()<< std::endl;
+
         }
     }
     else{
@@ -133,30 +138,35 @@ Block newBlock(std::vector<Block> myBlockchain, std::vector<Transactions> myTran
             tempTxval = distribution(gen);
             tempTransactionBlock.push_back(myTransactionsVector[tempTxval]);
             myTransactionsVector.erase(myTransactionsVector.begin() + tempTxval);
+           // std::cout<< "pp" << std::endl;
         }
     }
-        myBlock.setTransactionBlock(tempTransactionBlock);
+    myBlock.setTransactionBlock(tempTransactionBlock);
 
-        std::vector<string> myTransactionsHashes;
-        for(int k = 0; k < myTransactionsVector.size(); k++){
-            myTransactionsHashes.push_back(tempTransactionBlock[k].getHash());
-        }
-        std::vector<string> MerkleHash;
-        MerkleHash = MerkleTree(myTransactionsHashes);
-        myBlock.setMerkleHash(MerkleHash[0]);
-        myBlock.setTimestamp(std::time(nullptr));
+    std::vector<string> myTransactionsHashes;
+    for(int k = 0; k < tempTransactionBlock.size(); k++){
+        myTransactionsHashes.push_back(tempTransactionBlock[k].getHash());
+    }
 
-        string MainBlockHash;
-        uintmax_t Nonce =0;
-        MainBlockHash = myBlock.getPreviousBlock()+std::to_string(myBlock.getTimestamp())+myBlock.getDifficultyTarget()+myBlock.getMerkleHash()+ myBlock.getVersion();
-        string TempBlockHash;
-        do{
-            TempBlockHash = MainBlockHash +std::to_string(Nonce);
-            Hashish(TempBlockHash);
-            Nonce++;
-        }while(TempBlockHash>myBlock.getDifficultyTarget());
-        myBlock.setCurrentBlock(TempBlockHash);
-        myBlock.setNonce(Nonce);
+    std::vector<string> MerkleHash;
+    MerkleHash = MerkleTree(myTransactionsHashes);
+    myBlock.setMerkleHash(MerkleHash[0]);
+    myBlock.setTimestamp(std::time(nullptr));
 
+    string MainBlockHash;
+    uintmax_t Nonce =0;
+    string diffTarget = "00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
+    myBlock.setDifficultyTarget(diffTarget);
+    MainBlockHash = myBlock.getPreviousBlock()+std::to_string(myBlock.getTimestamp())+myBlock.getDifficultyTarget()+myBlock.getMerkleHash()+ myBlock.getVersion();
+    string TempBlockHash;
+    do{
+        TempBlockHash = MainBlockHash +std::to_string(Nonce);
+        Hashish(TempBlockHash);
+        Nonce++;
+        std::cout << TempBlockHash << " " << Nonce << std::endl;
+    }while(TempBlockHash>myBlock.getDifficultyTarget());
+
+    myBlock.setCurrentBlock(TempBlockHash);
+    myBlock.setNonce(Nonce);
     return myBlock;
 }
