@@ -75,14 +75,12 @@ void MainFunction(){
 
     }
 
-   // std::vector<string> MerkleHash;
-    //MerkleHash = MerkleTree(myTransactionsHashes);
-    //std::cout << MerkleHash[0] << std::endl;
     std::vector<Block> myBlockchain;
     while(myTransactionsVector.size()>0){
         myBlockchain.push_back(newBlock(myBlockchain, myTransactionsVector));
         std::cout <<" help help help help" << std::endl;
-    }
+   }
+
 
 }
 std::vector<string> MerkleTree(std::vector<string> myTransaction){
@@ -163,11 +161,12 @@ Block newBlock(std::vector<Block> myBlockchain, std::vector<Transactions> myTran
         TempBlockHash = MainBlockHash +std::to_string(Nonce);
         Hashish(TempBlockHash);
         Nonce++;
-        //std::cout << TempBlockHash << " " << Nonce << std::endl;
+   //     std::cout << TempBlockHash << " " << Nonce << std::endl;
     }while(TempBlockHash>myBlock.getDifficultyTarget());
 
     myBlock.setCurrentBlock(TempBlockHash);
     myBlock.setNonce(Nonce);
     std::cout << TempBlockHash << " " << Nonce << std::endl;
+
     return myBlock;
 }
