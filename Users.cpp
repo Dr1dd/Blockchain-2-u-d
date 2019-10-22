@@ -11,6 +11,7 @@
 static std::random_device rd;
 static std::mt19937 gen(rd());
 
+
 User GenerateUser(int i){
     std::uniform_int_distribution<std::mt19937::result_type> distribution(100,1000000);
     User myUser;
@@ -68,16 +69,19 @@ void MainFunction(){
     }
     Transactions myTransaction;
     std::vector<Transactions> myTransactionsVector;
-    for(int j = 0; j< 10000; j++){
-
+    int tempTx = 0;
+    while(tempTx <10000){
         myTransaction = GenerateTransactions(userVector);
+       // if(myTransaction.getSender()-myTransaction.getValue() >=0)
         myTransactionsVector.push_back(myTransaction);
+        tempTx++;
 
     }
 
     std::vector<Block> myBlockchain;
+    int distMax = 9999;
     while(myTransactionsVector.size()>0){
-        myBlockchain.push_back(newBlock(myBlockchain, myTransactionsVector));
+        myBlockchain.push_back(newBlock(myBlockchain, myTransactionsVector, distMax));
         std::cout <<" help help help help" << std::endl;
    }
 
@@ -100,12 +104,11 @@ std::vector<string> MerkleTree(std::vector<string> myTransaction){
             TransactionTemp.push_back(result);
         }
     }
-    //temp = myTransaction.size()/2;
     if(TransactionTemp.size() == 1) return TransactionTemp;
     MerkleTree(TransactionTemp);
 
 }
-Block newBlock(std::vector<Block> myBlockchain, std::vector<Transactions> myTransactionsVector){
+Block newBlock(std::vector<Block> myBlockchain, std::vector<Transactions> myTransactionsVector, int & distMax){
     Block myBlock;
     string previousBlock;
     previousBlock.resize(64);
@@ -117,18 +120,23 @@ Block newBlock(std::vector<Block> myBlockchain, std::vector<Transactions> myTran
        // std::cout<< "pp2" << std::endl;
 
     }
-    std::uniform_int_distribution<std::mt19937::result_type> distribution(0,999);
+    std::uniform_int_distribution<std::mt19937::result_type> distribution(0,distMax);
     //std::vector<Transactions> myTransactionsVectorCopy(myTransactionsVector);
 
     int tempTxval;
     std::vector<Transactions> tempTransactionBlock;
+    string tempTxHashCheck;
     if(myTransactionsVector.size()>=100) {
-        while (tempTransactionBlock.size() < 100) {
+        while (tempTransactionBlock.size() < 100 && myTransactionsVector.size()!=0) {
             tempTxval = distribution(gen);
-            tempTransactionBlock.push_back(myTransactionsVector[tempTxval]);
-            myTransactionsVector.erase(myTransactionsVector.begin() + tempTxval);
-           // std::cout<< tempTransactionBlock.size()<< std::endl;
+            tempTxHashCheck = myTransactionsVector[tempTxval].getSender()+myTransactionsVector[tempTxval].getReceiver()+std::to_string(myTransactionsVector[tempTxval].getValue()) +std::to_string(myTransactionsVector[tempTxval].getDate());
+                   Hashish(tempTxHashCheck);
+                 //  std::find(myTransactionsVector.begin(), myTransactionsVector.end(), myUser)
+                    if(tempTxHashCheck == myTransactionsVector[tempTxval].getHash()) tempTransactionBlock.push_back(myTransactionsVector[tempTxval]);
 
+            myTransactionsVector.erase(myTransactionsVector.begin() + tempTxval);
+        //    std::cout << tempTransactionBlock.size() << " " << myTransactionsVector.size() <<  std::endl;
+            distMax--;
         }
     }
     else{
@@ -136,7 +144,7 @@ Block newBlock(std::vector<Block> myBlockchain, std::vector<Transactions> myTran
             tempTxval = distribution(gen);
             tempTransactionBlock.push_back(myTransactionsVector[tempTxval]);
             myTransactionsVector.erase(myTransactionsVector.begin() + tempTxval);
-           // std::cout<< "pp" << std::endl;
+            //std::cout<< "pp" << std::endl;
         }
     }
     myBlock.setTransactionBlock(tempTransactionBlock);
@@ -161,7 +169,6 @@ Block newBlock(std::vector<Block> myBlockchain, std::vector<Transactions> myTran
         TempBlockHash = MainBlockHash +std::to_string(Nonce);
         Hashish(TempBlockHash);
         Nonce++;
-   //     std::cout << TempBlockHash << " " << Nonce << std::endl;
     }while(TempBlockHash>myBlock.getDifficultyTarget());
 
     myBlock.setCurrentBlock(TempBlockHash);
