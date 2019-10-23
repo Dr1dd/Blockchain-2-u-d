@@ -122,11 +122,11 @@ string Hashish(string &);
 User GenerateUser(int i);
 Transactions GenerateTransactions(std::vector<User>);
 std::vector<string> MerkleTree(std::vector<string>);
-Block newBlock(std::vector<Block> , std::vector<Transactions>, std::vector<int>, int & , int);
+Block newBlock(std::vector<Block> , std::vector<Transactions>, std::vector<int> &, int & , int);
 void MainFunction();
 string ToHex(const string &, bool);
 string valueCheck(int &, string &, string , int);
 string Compress(string &, string, int);
-void blockBodyGeneration(int , std::vector<Transactions> , std::vector<Transactions> , std::vector<int> );
+void blockBodyGeneration(int , std::vector<Transactions> , std::vector<Transactions> &, std::vector<int> );
 Block mineBlock(Block, int);
 #endif
