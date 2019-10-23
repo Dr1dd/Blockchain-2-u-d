@@ -26,12 +26,10 @@ User GenerateUser(int i){
     }
     string HashedKey;
     HashedKey = oss.str();
-    //std::cout << HashedKey << " ";
     oss.clear();
     oss.str("");
     string final;
     final =Hashish(HashedKey);
-   // std::cout << final << std::endl;
 
     myUser.public_key = HashedKey;
     return myUser;
@@ -56,7 +54,6 @@ Transactions GenerateTransactions(std::vector<User> userVector){
                 TransactionHash = myTransaction.getSender() + myTransaction.getReceiver()+ std::to_string(myTransaction.getValue()) + std::to_string(myTransaction.getDate());
                 Hashish(TransactionHash);
                 myTransaction.setHash(TransactionHash);
-       // std::cout << myTransaction.getSender() << " " << myTransaction.getReceiver() << " " << myTransaction.getValue() << std::endl;
     return myTransaction;
 }
 void MainFunction(){
@@ -74,7 +71,6 @@ void MainFunction(){
     int tempTx = 0;
     while(tempTx <10000){
         myTransaction = GenerateTransactions(userVector);
-       // if(myTransaction.getSender()-myTransaction.getValue() >=0)
         myTransactionsVector.push_back(myTransaction);
         tempTx++;
 
@@ -86,14 +82,12 @@ void MainFunction(){
 
     std::vector<int> txDeletionBlock;
     std::vector<Block> blockCandidates;
-    //std::cout << "Hello1" << std::endl;
     int b= 0;
     for(b = 0; b < 5; b++){
        blockCandidates.push_back(newBlock(myBlockchain, myTransactionsVector,txDeletionBlock, distMax, maxNonce));
     }
     int maxBlockDistribution = 4;
     std::uniform_int_distribution<std::mt19937::result_type> distribution(0,maxBlockDistribution);
-    //std::cout << "Hello2" << std::endl;
     int randomBlock = distribution(gen);
     std::vector<int> arrayOfRandomBlockIndexes {0, 1, 2, 3, 4};
     std::vector<int> arrayCopy = arrayOfRandomBlockIndexes;
@@ -101,18 +95,16 @@ void MainFunction(){
     bool notmined = true;
     while(notmined) {
         for (b = 0; b < 5; b++) {
-            std::cout << "Hello3" << std::endl;
-            std::cout << arrayCopy[randomBlock] << " " << randomBlock << std::endl;
             minedBlock = mineBlock(blockCandidates[arrayCopy[randomBlock]], maxNonce);
-
             arrayCopy.erase(arrayCopy.begin()+randomBlock);
-            std::cout << minedBlock.getNonce() << " " << minedBlock.getMerkleHash() << " " << minedBlock.getCurrentBlock() << std::endl;
+            std::cout << minedBlock.getNonce() << " - Nonce (jei 0 - nera), " << minedBlock.getCurrentBlock() << " - iskastas blokas" << std::endl;
             if (minedBlock.getNonce() !=0) {
                 myBlockchain.push_back(minedBlock);
                 for(int c = 0; c < txDeletionBlock.size(); c++){
                     myTransactionsVector.erase(myTransactionsVector.begin() +txDeletionBlock[c]);
                 }
                 txDeletionBlock.clear();
+                std::cout << "Blokas buvo iskastas" << std::endl;
                 notmined = false;
                 break;
             }
@@ -121,6 +113,7 @@ void MainFunction(){
             randomBlock = distribution(generation);
         }
         arrayCopy.clear();
+        arrayCopy.resize(5);
         std::copy(arrayOfRandomBlockIndexes.begin(), arrayOfRandomBlockIndexes.end(), arrayCopy.begin());
         maxNonce *=2;
         maxBlockDistribution = 4;
@@ -158,11 +151,8 @@ Block newBlock(std::vector<Block> myBlockchain, std::vector<Transactions> myTran
     else{
         previousBlock = myBlockchain[myBlockchain.size()-1].getCurrentBlock();
         myBlock.setPreviousBlock(previousBlock);
-       // std::cout<< "pp2" << std::endl;
-
     }
     std::uniform_int_distribution<std::mt19937::result_type> distribution(0,distMax);
-    //std::vector<Transactions> myTransactionsVectorCopy(myTransactionsVector);
     std::vector<Transactions> tempTransactionBlock;
     blockBodyGeneration(distMax, myTransactionsVector,tempTransactionBlock, txDeletionBlock );
     std::vector<string> myTransactionsHashes;
@@ -170,7 +160,6 @@ Block newBlock(std::vector<Block> myBlockchain, std::vector<Transactions> myTran
         myTransactionsHashes.push_back(tempTransactionBlock[k].getHash());
     }
     std::vector<string> MerkleHash;
-    //std::cout << myTransactionsHashes.size()<< std::endl;
 
 
     MerkleHash = MerkleTree(myTransactionsHashes);
@@ -183,9 +172,6 @@ Block newBlock(std::vector<Block> myBlockchain, std::vector<Transactions> myTran
     string diffTarget = "000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
     myBlock.setDifficultyTarget(diffTarget);
 
- //   std::cout << " 7" << std::endl;
-    //std::cout << TempBlockHash << " " << Nonce << std::endl;
-
     return myBlock;
 }
 Block mineBlock(Block myBlock, int maxNonce){
@@ -196,12 +182,11 @@ Block mineBlock(Block myBlock, int maxNonce){
     do{
         TempBlockHash = MainBlockHash +std::to_string(Nonce);
         Hashish(TempBlockHash);
-     //   std::cout << Nonce << std::endl;
         Nonce++;
     }while(TempBlockHash>myBlock.getDifficultyTarget() && Nonce <=maxNonce);
     if(TempBlockHash<myBlock.getDifficultyTarget()) {
         myBlock.setCurrentBlock(TempBlockHash);
-        myBlock.setNonce(Nonce);
+        myBlock.setNonce(Nonce-1);
     }
     else myBlock.setNonce(0);
 
@@ -209,25 +194,18 @@ Block mineBlock(Block myBlock, int maxNonce){
 }
 void blockBodyGeneration(int distMax, std::vector<Transactions> myTransactionsVector, std::vector<Transactions> & tempTransactionBlock, std::vector<int> txDeletionVector){
     std::uniform_int_distribution<std::mt19937::result_type> distribution(0,distMax);
-    //std::cout << "blockcandidates1" << std::endl;
     int tempTxval;
-    //std::vector<Transactions> tempTransactionBlock;
     std::vector<Transactions> myTransactionsVectorCopy(myTransactionsVector);
     string tempTxHashCheck;
-   // std::cout << "blockcandidates2" << std::endl;
-    //std::vector<int> txDeletionVector;
     if(myTransactionsVectorCopy.size()>=100) {
         while (tempTransactionBlock.size() < 100 && myTransactionsVectorCopy.size()!=0) {
             tempTxval = distribution(gen);
             tempTxHashCheck = myTransactionsVectorCopy[tempTxval].getSender()+myTransactionsVectorCopy[tempTxval].getReceiver()+std::to_string(myTransactionsVectorCopy[tempTxval].getValue()) +std::to_string(myTransactionsVectorCopy[tempTxval].getDate());
             Hashish(tempTxHashCheck);
-            //  std::find(myTransactionsVector.begin(), myTransactionsVector.end(), myUser)
             if(tempTxHashCheck == myTransactionsVectorCopy[tempTxval].getHash()) tempTransactionBlock.push_back(myTransactionsVectorCopy[tempTxval]);
             myTransactionsVectorCopy.erase(myTransactionsVectorCopy.begin()+tempTxval);
             txDeletionVector.push_back(tempTxval);
-            //    std::cout << tempTransactionBlock.size() << " " << myTransactionsVector.size() <<  std::endl;
             distMax--;
-            //std::cout << tempTransactionBlock.size() << std::endl;
         }
     }
     else {
@@ -236,9 +214,6 @@ void blockBodyGeneration(int distMax, std::vector<Transactions> myTransactionsVe
             tempTransactionBlock.push_back(myTransactionsVectorCopy[tempTxval]);
             myTransactionsVectorCopy.erase(myTransactionsVectorCopy.begin() + tempTxval);
             txDeletionVector.push_back(tempTxval);
-           // std::cout << "blockcandidates4" << std::endl;
-            //std::cout<< "pp" << std::endl;
         }
     }
-   // std::cout << "Help" << std::endl;
 };
