@@ -18,6 +18,7 @@ class Transactions{
     private:
         string _hash;
         string _sender;
+        int _sendersId;
         string _receiver;
         double _value;
         std::time_t _date;
@@ -46,6 +47,9 @@ class Transactions{
         void setSender(string a){
             _sender = a;
         }
+        void setSendersID(int a){
+            _sendersId = a;
+        }
         void setReceiver(string b){
             _receiver = b;
         }
@@ -60,6 +64,9 @@ class Transactions{
         }
         string getReceiver(){
             return _receiver;
+        }
+        int getSendersID(){
+            return _sendersId;
         }
         double getValue(){
             return _value;
@@ -122,11 +129,11 @@ string Hashish(string &);
 User GenerateUser(int i);
 Transactions GenerateTransactions(std::vector<User>);
 std::vector<string> MerkleTree(std::vector<string>);
-Block newBlock(std::vector<Block> , std::vector<Transactions>, std::vector<int> &, int & , int);
+Block newBlock(std::vector<Block> , std::vector<Transactions>, std::vector<User>, std::vector<int> &, int & , int);
 void MainFunction();
 string ToHex(const string &, bool);
 string valueCheck(int &, string &, string , int);
 string Compress(string &, string, int);
-void blockBodyGeneration(int , std::vector<Transactions> , std::vector<Transactions> &, std::vector<int> );
-Block mineBlock(Block, int);
+void blockBodyGeneration(int , std::vector<Transactions> , std::vector<User> , std::vector<Transactions> &, std::vector<int> );
+Block mineBlock(Block, int, int );
 #endif
