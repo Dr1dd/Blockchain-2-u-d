@@ -134,6 +134,6 @@ void MainFunction();
 string ToHex(const string &, bool);
 string valueCheck(int &, string &, string , int);
 string Compress(string &, string, int);
-void blockBodyGeneration(int , std::vector<Transactions> , std::vector<User> , std::vector<Transactions> &, std::vector<int> );
+void blockBodyGeneration(int , std::vector<Transactions> , std::vector<User> , std::vector<Transactions> &, std::vector<int> &);
 Block mineBlock(Block, int, int );
 #endif

@@ -78,57 +78,67 @@ void MainFunction(){
     }
 
     std::vector<Block> myBlockchain;
-    int distMax = 9999;
+    int distMax;
     int maxNonce = 100000;
 
     std::vector<int> txDeletionBlock;
+    std::vector<std::vector<int>> txDeletionBlockVector;
     std::vector<Block> blockCandidates;
     int b= 0;
-    for(b = 0; b < 5; b++){
-       blockCandidates.push_back(newBlock(myBlockchain, myTransactionsVector, userVector, txDeletionBlock, distMax, maxNonce));
-    }
-    int maxBlockDistribution = 4;
-    std::uniform_int_distribution<std::mt19937::result_type> distribution(0,maxBlockDistribution);
-    int randomBlock = distribution(gen);
-    std::vector<int> arrayOfRandomBlockIndexes {0, 1, 2, 3, 4};
-    std::vector<int> arrayCopy = arrayOfRandomBlockIndexes;
-    Block minedBlock;
-    bool notmined = true;
-    int Nonce = 0;
-    while(notmined) {
+    while(myTransactionsVector.size()>0) {
         for (b = 0; b < 5; b++) {
-            minedBlock = mineBlock(blockCandidates[arrayCopy[randomBlock]], maxNonce, Nonce);
-            arrayCopy.erase(arrayCopy.begin()+randomBlock);
-            std::cout << minedBlock.getNonce() << " - Bloko nonce (jei 0 - nera), " << minedBlock.getCurrentBlock()  << std::endl;
-            if (minedBlock.getNonce() !=0) {
-                myBlockchain.push_back(minedBlock);
-                for(int c = 0; c < txDeletionBlock.size(); c++){
-                    myTransactionsVector.erase(myTransactionsVector.begin() +txDeletionBlock[c]);
+            distMax = myTransactionsVector.size()-1;
+            blockCandidates.push_back(newBlock(myBlockchain, myTransactionsVector, userVector, txDeletionBlock, distMax, maxNonce));
+            txDeletionBlockVector.push_back(txDeletionBlock);
+            txDeletionBlock.clear();
+        }
+        int maxBlockDistribution = 4;
+        std::uniform_int_distribution<std::mt19937::result_type> distribution(0, maxBlockDistribution);
+        int randomBlock = distribution(gen);
+        std::vector<int> arrayOfRandomBlockIndexes{0, 1, 2, 3, 4};
+        std::vector<int> arrayCopy = arrayOfRandomBlockIndexes;
+        Block minedBlock;
+        bool notmined = true;
+        int Nonce = 0;
+        while (notmined) {
+            for (b = 0; b < 5; b++) {
+                minedBlock = mineBlock(blockCandidates[arrayCopy[randomBlock]], maxNonce, Nonce);
+                arrayCopy.erase(arrayCopy.begin() + randomBlock);
+                std::cout << minedBlock.getNonce() << " - Bloko nonce (jei 0 - nera), " << minedBlock.getCurrentBlock()
+                          << std::endl;
+                if (minedBlock.getNonce() != 0) {
+                    myBlockchain.push_back(minedBlock);
+                    for (int c = 0; c < txDeletionBlockVector[b].size(); c++) {
+                        myTransactionsVector.erase(myTransactionsVector.begin() + txDeletionBlockVector[b][c]);
+                    }
+                    txDeletionBlockVector.clear();
+                    txDeletionBlock.clear();
+                    std::cout << "Blokas buvo iskastas" << std::endl;
+                    notmined = false;
+                    break;
                 }
-                txDeletionBlock.clear();
-                std::cout << "Blokas buvo iskastas" << std::endl;
-                notmined = false;
-                break;
+                maxBlockDistribution--;
+                std::uniform_int_distribution<std::mt19937::result_type> distribution(0, maxBlockDistribution);
+                randomBlock = distribution(generation);
+                std::cout << " 3" << std::endl;
             }
-            maxBlockDistribution--;
-            std::uniform_int_distribution<std::mt19937::result_type> distribution(0,maxBlockDistribution);
+            arrayCopy.clear();
+            arrayCopy.resize(5);
+            std::copy(arrayOfRandomBlockIndexes.begin(), arrayOfRandomBlockIndexes.end(), arrayCopy.begin());
+            Nonce = maxNonce;
+            maxNonce *= 2;
+            maxBlockDistribution = 4;
+            std::uniform_int_distribution<std::mt19937::result_type> distribution(0, maxBlockDistribution);
             randomBlock = distribution(generation);
         }
-        arrayCopy.clear();
-        arrayCopy.resize(5);
-        std::copy(arrayOfRandomBlockIndexes.begin(), arrayOfRandomBlockIndexes.end(), arrayCopy.begin());
-        Nonce = maxNonce;
-        maxNonce *=2;
-        maxBlockDistribution = 4;
-        std::uniform_int_distribution<std::mt19937::result_type> distribution(0,maxBlockDistribution);
-        randomBlock = distribution(generation);
-        }
+        blockCandidates.clear();
+        std::cout << myTransactionsVector.size() <<  " - Likusiu transakciju skaicius" << std::endl;
+    }
 
 }
 std::vector<string> MerkleTree(std::vector<string> myTransaction){
     string result;
     std::vector<string> TransactionTemp;
-    //int temp;
     for(int i = 0; i < myTransaction.size()-1; i+=2){
         if(myTransaction.size()%2==0) {
             result = myTransaction[i] + myTransaction[i+1];
@@ -173,7 +183,7 @@ Block newBlock(std::vector<Block> myBlockchain, std::vector<Transactions> myTran
     myBlock.setTimestamp(std::time(nullptr));
 
     string MainBlockHash;
-    string diffTarget = "000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
+    string diffTarget = "00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
     myBlock.setDifficultyTarget(diffTarget);
 
     return myBlock;
@@ -194,7 +204,7 @@ Block mineBlock(Block myBlock, int maxNonce, int Nonce){
     else myBlock.setNonce(0);
     return myBlock;
 }
-void blockBodyGeneration(int distMax, std::vector<Transactions> myTransactionsVector, std::vector<User> myUser, std::vector<Transactions> & tempTransactionBlock, std::vector<int> txDeletionVector){
+void blockBodyGeneration(int distMax, std::vector<Transactions> myTransactionsVector, std::vector<User> myUser, std::vector<Transactions> & tempTransactionBlock, std::vector<int> & txDeletionVector){
     std::uniform_int_distribution<std::mt19937::result_type> distribution(0,distMax);
     int tempTxval;
     std::vector<Transactions> myTransactionsVectorCopy(myTransactionsVector);
