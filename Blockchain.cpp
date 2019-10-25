@@ -215,6 +215,7 @@ void blockBodyGeneration(int distMax, std::vector<Transactions> myTransactionsVe
             tempTxHashCheck = myTransactionsVectorCopy[tempTxval].getSender()+myTransactionsVectorCopy[tempTxval].getReceiver()+std::to_string(myTransactionsVectorCopy[tempTxval].getValue()) +std::to_string(myTransactionsVectorCopy[tempTxval].getDate());
             Hashish(tempTxHashCheck);
             if(tempTxHashCheck == myTransactionsVectorCopy[tempTxval].getHash() && (myUser[myTransactionsVectorCopy[tempTxval].getSendersID()].balance- myTransactionsVectorCopy[tempTxval].getValue()) >=0) tempTransactionBlock.push_back(myTransactionsVectorCopy[tempTxval]);
+            else myTransactionsVector.erase(myTransactionsVector.begin()+tempTxval);
             myTransactionsVectorCopy.erase(myTransactionsVectorCopy.begin()+tempTxval);
             txDeletionVector.push_back(tempTxval);
             distMax--;
